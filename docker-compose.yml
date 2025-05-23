@@ -1,0 +1,28 @@
+version: "3.7"
+services:
+  comfyui:
+    image: comfyui-rocm:1.0
+    container_name: comfyui
+    devices:
+      - /dev/kfd
+      - /dev/dri
+    group_add:
+      - render  # should be gid 110
+      - video
+    environment:
+      BIND_IP: "0.0.0.0" #This is from the containers point of view
+      PORT: "8188"
+    # Extra args passed to main.py (empty by default)
+    volumes:
+      - ./models:/root/ComfyUI/models   # Models Location
+      - ./user:/root/ComfyUI/user       # Workflows and Usr Config
+      - ./output:/root/ComfyUI/output   # Image Output
+      - ./input:/root/ComfyUI/input     # Image Input for Masks
+
+    ports:
+      # - "192.168.1.100:8188:8188" # Should be used if you want to bind to a specific IP
+      - "8188:8188"
+    command: []
+    security_opt:
+      - seccomp:unconfined
+    restart: unless-stopped
